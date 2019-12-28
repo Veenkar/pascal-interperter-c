@@ -13,3 +13,5 @@ SOURCES += \
         main.C
 
 include(../pascal-interpreter-c/pascal-interpreter-c-sources.pri)
+
+DISTFILES +=

@@ -15,12 +15,10 @@
 /*******************************************************************************
  * Define Macros
  ******************************************************************************/
-#define PSC_TOKEN_TYPE_X_FOREACH(PSC_TOKEN_X_MACRO) \
-    PSC_TOKEN_X_MACRO(PSC_TOKEN_INT), \
-    PSC_TOKEN_X_MACRO(PSC_TOKEN_MUL), \
-    PSC_TOKEN_X_MACRO(PSC_TOKEN_DIV), \
-    PSC_TOKEN_X_MACRO(PSC_TOKEN_EOF)  \
-/* END PSC_TOKEN_TYPE_X_FOREACH */
+#define PSC_TOKEN_TYPE_X_FOREACH(PSC_TOKEN_X_MACRO)                     \
+    PSC_TOKEN_X_MACRO(PSC_TOKEN_INT), PSC_TOKEN_X_MACRO(PSC_TOKEN_MUL), \
+        PSC_TOKEN_X_MACRO(PSC_TOKEN_DIV),                               \
+        PSC_TOKEN_X_MACRO(PSC_TOKEN_EOF) /* END PSC_TOKEN_TYPE_X_FOREACH */
 
 /*******************************************************************************
  * Function-Like Macros
@@ -42,7 +40,7 @@ typedef enum Psc_Token_Type_Tag
 typedef struct Psc_Token_Tag
 {
     Psc_Token_Type_T type;
-    void * value_;
+    void *           value_;
 
 } Psc_Token_T;
 
@@ -63,7 +61,7 @@ typedef struct Psc_Token_Tag
  * @param value_
  * @return
  */
-Psc_Token_T Psc_Token(Psc_Token_Type_T type, void * value_);
+Psc_Token_T Psc_Token(Psc_Token_Type_T type, void *value_);
 
 /**
  * @brief Psc_Token_String: string representation of the class instance.
@@ -80,4 +78,3 @@ int Psc_Token_String(const Psc_Token_T *self_, char *buf_, size_t bufsize);
 /*******************************************************************************
  * End psc_token.x
  ******************************************************************************/
-

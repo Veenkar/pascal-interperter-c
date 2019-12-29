@@ -38,17 +38,48 @@
 /*******************************************************************************
  * Functions Declarations
  ******************************************************************************/
+/**
+ * @brief _Psc_Lexer_Error
+ * @param self
+ * @param fmt
+ */
+static void _Psc_Lexer_Error(Psc_Lexer_T *self, const char *fmt, ...);
+
+/**
+ * @brief _Psc_Lexer_Skip_Whitespace
+ * @param self
+ */
 static void _Psc_Lexer_Skip_Whitespace(Psc_Lexer_T *self);
 
+/**
+ * @brief _Psc_Lexer_Advance
+ * @param self
+ */
 static void _Psc_Lexer_Advance(Psc_Lexer_T *self);
 
+/**
+ * @brief _Psc_Lexer_Integer
+ * @param self
+ * @return
+ */
 static long _Psc_Lexer_Integer(Psc_Lexer_T *self);
-
-static void _Psc_Lexer_Error(Psc_Lexer_T *self, const char *fmt, ...);
 
 /*******************************************************************************
  * Private Functions Definitions
  ******************************************************************************/
+/* TODO: move logging to separate file */
+static void _Psc_Lexer_Error(Psc_Lexer_T *self, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    vprintf(fmt, args);
+    self->eof = true;
+    abort();
+
+    va_end(args);
+}
+
 static void _Psc_Lexer_Skip_Whitespace(Psc_Lexer_T *self)
 {
     while (!self->eof && isspace(self->current_char))
@@ -85,14 +116,6 @@ static long _Psc_Lexer_Integer(Psc_Lexer_T *self)
     if (!self->eof || !isdigit(self->current_char))
     {
         _Psc_Lexer_Error(self, "end of file");
-        self->eof = true;
-        return 0;
-    }
-
-    if (!self->eof || !isdigit(self->current_char))
-    {
-        _Psc_Lexer_Error(self, "end of file");
-        self->eof = true;
         return 0;
     }
 
@@ -107,17 +130,6 @@ static long _Psc_Lexer_Integer(Psc_Lexer_T *self)
         _Psc_Lexer_Error(self, "integer conversion failed");
         return 0;
     }
-}
-
-static void _Psc_Lexer_Error(Psc_Lexer_T *self, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-
-    printf(fmt, args);
-    self->eof = true;
-
-    va_end(args);
 }
 
 /*******************************************************************************
@@ -167,7 +179,8 @@ Psc_Token_T Psc_Lexer_Get_Next_Token(Psc_Lexer_T *self)
     }
     if (isdigit(self->current_char))
     {
-        return Psc_Token(PSC_TOKEN_INT, _Psc_Lexer_Integer(self));
+        long val = _Psc_Lexer_Integer(self);
+        return Psc_Token_Construct(PSC_TOKEN_INT, (void *)&val);
     }
 
     _Psc_Lexer_Error(self, "unhandled character: %c", self->current_char);

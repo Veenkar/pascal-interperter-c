@@ -18,9 +18,7 @@ void Pascal_Psc_Token_Test(Psc_Token_Type_T token_type, const T token_value)
 
     /** CONSTRUCT INT PSC_TOKEN */
     {
-        T *p_psc_token_value_ = (T *)malloc(sizeof(T));
-        *p_psc_token_value_   = token_value;
-        psc_token             = Psc_Token(token_type, p_psc_token_value_);
+        psc_token = Psc_Token_Construct(token_type, (void *)&token_value);
         EXPECT_NE(nullptr, psc_token.value_);
         EXPECT_EQ(psc_token.type, token_type);
     }
@@ -41,7 +39,7 @@ void Pascal_Psc_Token_Test(Psc_Token_Type_T token_type, const T token_value)
 
     /** DESTRUCT */
     free(psc_token.value_);
-    psc_token.value_ = nullptr;
+    Psc_Token_Descruct(&psc_token);
 }
 
 

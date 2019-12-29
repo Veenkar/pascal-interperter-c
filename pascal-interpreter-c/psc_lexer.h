@@ -32,7 +32,7 @@ typedef struct Psc_Lexer_Tag
     size_t text_length;
     char   current_char;
     size_t pos;
-    bool   eof;
+    bool   eof; /* TODO: use status instead of EOF flag */
 
 } Psc_Lexer_T;
 

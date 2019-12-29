@@ -14,13 +14,14 @@
 
 /* system */
 #include <ctype.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 /*******************************************************************************
  * Define Macros
  ******************************************************************************/
-#define PSC_LEXER_INT_STR_BUF_SIZE    64u
+#define PSC_LEXER_INT_STR_BUF_SIZE 64u
 
 /*******************************************************************************
  * Function-Like Macros
@@ -41,14 +42,17 @@ static void _Psc_Lexer_Skip_Whitespace(Psc_Lexer_T *self);
 
 static void _Psc_Lexer_Advance(Psc_Lexer_T *self);
 
-static int _Psc_Lexer_Integer(Psc_Lexer_T *self);
+static long _Psc_Lexer_Integer(Psc_Lexer_T *self);
+
+static void _Psc_Lexer_Error(Psc_Lexer_T *self, const char *fmt, ...);
 
 /*******************************************************************************
  * Private Functions Definitions
  ******************************************************************************/
 static void _Psc_Lexer_Skip_Whitespace(Psc_Lexer_T *self)
 {
-    while (!self->eof && isspace(self->current_char)) {
+    while (!self->eof && isspace(self->current_char))
+    {
         _Psc_Lexer_Advance(self);
     }
 }
@@ -64,7 +68,7 @@ static void _Psc_Lexer_Advance(Psc_Lexer_T *self)
     if (self->pos >= self->text_length)
     {
         self->current_char = '\0';
-        self->eof = true;
+        self->eof          = true;
     }
     else
     {
@@ -72,26 +76,48 @@ static void _Psc_Lexer_Advance(Psc_Lexer_T *self)
     }
 }
 
-static int _Psc_Lexer_Integer(Psc_Lexer_T *self)
+static long _Psc_Lexer_Integer(Psc_Lexer_T *self)
 {
-    char buf[PSC_LEXER_INT_STR_BUF_SIZE];
-    size_t buf_pos = 0;
-    int res;
+    char *strtol_char_ptr_;
+    char *current_char_ptr_ = &(self->text[self->pos]);
+    long  val;
 
-    while (!self->eof && isdigit(self->current_char))
+    if (!self->eof || !isdigit(self->current_char))
     {
-        if (buf_pos >= PSC_LEXER_INT_STR_BUF_SIZE - 1)
-        {
-            buf[PSC_LEXER_INT_STR_BUF_SIZE - 1] = '\0';
-            printf("Psc_Lexer error: integer %s... to big", buf);
-            self->eof = true;
-            return 0;
-        }
-        buf[buf_pos++] = self->current_char;
+        _Psc_Lexer_Error(self, "end of file");
+        self->eof = true;
+        return 0;
     }
-    buf[buf_pos] = '\0';
 
+    if (!self->eof || !isdigit(self->current_char))
+    {
+        _Psc_Lexer_Error(self, "end of file");
+        self->eof = true;
+        return 0;
+    }
 
+    val = strtol(current_char_ptr_, &strtol_char_ptr_, 10);
+    if (NULL != strtol_char_ptr_ && strtol_char_ptr_ != current_char_ptr_)
+    {
+        self->pos = (size_t)(strtol_char_ptr_ - current_char_ptr_);
+        return val;
+    }
+    else
+    {
+        _Psc_Lexer_Error(self, "integer conversion failed");
+        return 0;
+    }
+}
+
+static void _Psc_Lexer_Error(Psc_Lexer_T *self, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    printf(fmt, args);
+    self->eof = true;
+
+    va_end(args);
 }
 
 /*******************************************************************************
@@ -106,32 +132,31 @@ Psc_Lexer_T Psc_Lexer(char *text, size_t text_length)
 
     if (NULL == text || text_length <= 0)
     {
-        obj.eof = true;
+        obj.eof          = true;
         obj.current_char = '\0';
     }
     else
     {
-        obj.eof = false;
+        obj.eof          = false;
         obj.current_char = text[0];
     }
-
 
 
     return obj;
 }
 
 
-Psc_Token_T Psc_Lexer_Get_Next_Token(Psc_Lexer_T * self)
+Psc_Token_T Psc_Lexer_Get_Next_Token(Psc_Lexer_T *self)
 {
     /** error handling */
     if (NULL == self)
     {
-        printf("Psc_Lexer error: self argument is null.");
+        _Psc_Lexer_Error(self, "self argument is null.");
         return Psc_Token_Eof();
     }
     if (self->eof)
     {
-        printf("Psc_Lexer: end of file.");
+        _Psc_Lexer_Error(self, "end of file.");
         return Psc_Token_Eof();
     }
 
@@ -145,9 +170,9 @@ Psc_Token_T Psc_Lexer_Get_Next_Token(Psc_Lexer_T * self)
         return Psc_Token(PSC_TOKEN_INT, _Psc_Lexer_Integer(self));
     }
 
-    printf("Psc_Lexer error: unhandled character: %c", self->current_char);
-    return Psc_Token_Eof();
+    _Psc_Lexer_Error(self, "unhandled character: %c", self->current_char);
 
+    return Psc_Token_Eof();
 }
 
 

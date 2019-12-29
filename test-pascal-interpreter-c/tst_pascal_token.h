@@ -28,7 +28,7 @@ void Pascal_Psc_Token_Test(Psc_Token_Type_T token_type, const T token_value)
     /** STRINGIFY */
     {
         static char buf[256u];
-        int         res = Psc_Token_String(&psc_token, buf, sizeof(buf));
+        int         res = Psc_Token_To_String(&psc_token, buf, sizeof(buf));
         EXPECT_GT(res, 0);
         std::cout << "PSC_TOKEN res: " << res << ", val: " << std::string(buf)
                   << std::endl;

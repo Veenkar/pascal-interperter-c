@@ -10,6 +10,8 @@
 /*******************************************************************************
  * Includes
  ******************************************************************************/
+#include "psc_token.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -27,6 +29,8 @@
 typedef struct Psc_Lexer_Tag
 {
     char * text;
+    size_t text_length;
+    char   current_char;
     size_t pos;
     bool   eof;
 
@@ -39,14 +43,9 @@ typedef struct Psc_Lexer_Tag
 /*******************************************************************************
  * Functions Declarations
  ******************************************************************************/
-Psc_Lexer_T Psc_Lexer(char *text)
-{
-    Psc_Lexer_T obj = {0};
-    obj.text        = text;
-    obj.pos         = 0;
-    obj.eof         = (NULL == text) ? true : false;
-    return obj;
-}
+Psc_Lexer_T Psc_Lexer(char *text, size_t text_length);
+
+Psc_Token_T Psc_Lexer_Get_Next_Token(Psc_Lexer_T *self);
 
 /*******************************************************************************
  * Functions Definitions

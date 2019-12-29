@@ -11,6 +11,7 @@
 /*******************************************************************************
  * Includes
  ******************************************************************************/
+/* project */
 #include "psc_token.h"
 #include "stdio.h"
 
@@ -48,20 +49,25 @@ Psc_Token_T Psc_Token(Psc_Token_Type_T type, void *value_)
     return obj;
 }
 
-int Psc_Token_String(const Psc_Token_T *self_, char *buf_, size_t bufsize)
+Psc_Token_T Psc_Token_Eof()
 {
-    void *      val_ = self_->value_;
+    return Psc_Token(PSC_TOKEN_EOF, NULL);
+}
+
+int Psc_Token_To_String(const Psc_Token_T *self, char *buf_, size_t bufsize)
+{
+    void *      val_ = self->value_;
     const char *psc_token_enum_name;
 
-    if (NULL == self_)
+    if (NULL == self)
     {
         return -1;
     }
 
     /** convert psc_token enum to string */
-    if (self_->type < N_ELEMS(psc_token_names))
+    if (self->type < N_ELEMS(psc_token_names))
     {
-        psc_token_enum_name = psc_token_names[self_->type];
+        psc_token_enum_name = psc_token_names[self->type];
     }
     else /** psc_token not in psc_token enum - str repr psc_token_enum_name not
             avaiable */
@@ -69,7 +75,7 @@ int Psc_Token_String(const Psc_Token_T *self_, char *buf_, size_t bufsize)
         return -2;
     }
 
-    switch (self_->type)
+    switch (self->type)
     {
     case PSC_TOKEN_INT:
     {
@@ -97,3 +103,4 @@ int Psc_Token_String(const Psc_Token_T *self_, char *buf_, size_t bufsize)
 /*******************************************************************************
  * End psc_token.c
  ******************************************************************************/
+

@@ -10,15 +10,20 @@
 /*******************************************************************************
  * Includes
  ******************************************************************************/
+/* system */
 #include <stddef.h>
 
 /*******************************************************************************
  * Define Macros
  ******************************************************************************/
-#define PSC_TOKEN_TYPE_X_FOREACH(PSC_TOKEN_X_MACRO)                     \
-    PSC_TOKEN_X_MACRO(PSC_TOKEN_INT), PSC_TOKEN_X_MACRO(PSC_TOKEN_MUL), \
-        PSC_TOKEN_X_MACRO(PSC_TOKEN_DIV),                               \
-        PSC_TOKEN_X_MACRO(PSC_TOKEN_EOF) /* END PSC_TOKEN_TYPE_X_FOREACH */
+/* clang-format off */
+#define PSC_TOKEN_TYPE_X_FOREACH(PSC_TOKEN_X_MACRO) \
+    PSC_TOKEN_X_MACRO(PSC_TOKEN_INT), \
+    PSC_TOKEN_X_MACRO(PSC_TOKEN_MUL), \
+    PSC_TOKEN_X_MACRO(PSC_TOKEN_DIV), \
+    PSC_TOKEN_X_MACRO(PSC_TOKEN_EOF)  \
+/* END PSC_TOKEN_TYPE_X_FOREACH */
+/* clang-format on */
 
 /*******************************************************************************
  * Function-Like Macros
@@ -64,16 +69,22 @@ typedef struct Psc_Token_Tag
 Psc_Token_T Psc_Token(Psc_Token_Type_T type, void *value_);
 
 /**
+ * @brief Psc_Token_Eof
+ * @return
+ */
+Psc_Token_T Psc_Token_Eof(void);
+
+/**
  * @brief Psc_Token_String: string representation of the class instance.
  * @example:
  *   Psc_Token(INTEGER, 3)
  *   Psc_Token(MUL, '*')
- * @param self_
+ * @param self
  * @param buf_
  * @param bufsize
  * @return
  */
-int Psc_Token_String(const Psc_Token_T *self_, char *buf_, size_t bufsize);
+int Psc_Token_To_String(const Psc_Token_T *self, char *buf_, size_t bufsize);
 
 /*******************************************************************************
  * End psc_token.x

@@ -147,9 +147,9 @@ static void _Psc_Lexer_Advance(Psc_Lexer_T *self)
 
 static long _Psc_Lexer_Integer(Psc_Lexer_T *self)
 {
-    char *strtol_char_ptr_;
-    char *current_char_ptr_ = &(self->text[self->pos]);
-    long  val;
+    char *      strtol_char_ptr_;
+    const char *current_char_ptr_ = &(self->text[self->pos]);
+    long        val;
 
     if (self->eof || !isdigit(self->current_char))
     {

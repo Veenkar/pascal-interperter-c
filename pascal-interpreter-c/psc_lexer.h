@@ -28,11 +28,11 @@
  ******************************************************************************/
 typedef struct Psc_Lexer_Tag
 {
-    char * text;
-    size_t text_length;
-    char   current_char;
-    size_t pos;
-    bool   eof; /* TODO: use status instead of EOF flag */
+    const char *text;
+    size_t      text_length;
+    char        current_char;
+    size_t      pos;
+    bool        eof; /* TODO: use status instead of EOF flag */
 
 } Psc_Lexer_T;
 

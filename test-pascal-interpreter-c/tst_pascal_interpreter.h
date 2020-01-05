@@ -16,7 +16,7 @@ TEST(pascal_psc_interpreter, pascal_psc_interpreter_mul)
 {
 #define PSC_MUL_TEST_TEXT "2*5"
     const char *text  = PSC_MUL_TEST_TEXT;
-    Psc_Lexer_T lexer = Psc_Lexer(PSC_MUL_TEST_TEXT, sizeof(PSC_MUL_TEST_TEXT));
+    Psc_Lexer_T lexer = Psc_Lexer(text, sizeof(PSC_MUL_TEST_TEXT));
 #undef PSC_MUL_TEST_TEXT
     Psc_Interpreter_T interpreter = Psc_Interpreter_Construct(&lexer);
     long              val         = 0;

@@ -54,6 +54,15 @@ static void _Psc_Interpreter_Error(Psc_Interpreter_T *self, const char *fmt,
 static void _Psc_Interpreter_Print(const Psc_Interpreter_T *self,
                                    const char *             fmt, ...);
 
+/**
+ * @brief _Psc_Interpreter_vPrint
+ * @param self
+ * @param fmt
+ * @param arg
+ */
+static void _Psc_Interpreter_vPrint(const Psc_Interpreter_T *self,
+                                    const char *fmt, va_list arg);
+
 /*******************************************************************************
  * Private Functions Definitions
  ******************************************************************************/
@@ -64,24 +73,33 @@ static void _Psc_Interpreter_Print(const Psc_Interpreter_T *self,
     (void)self;
 
     va_start(args, fmt);
-
-    vprintf(fmt, args);
-
+    _Psc_Interpreter_vPrint(self, fmt, args);
     va_end(args);
+}
+
+static void _Psc_Interpreter_vPrint(const Psc_Interpreter_T *self,
+                                    const char *fmt, va_list args)
+{
+    (void)self;
+    vprintf(fmt, args);
+    printf("\n");
+    fflush(stdout);
 }
 
 static void _Psc_Interpreter_Error(Psc_Interpreter_T *self, const char *fmt,
                                    ...)
 {
     va_list args;
-    va_start(args, fmt);
 
+    printf("PSCI Error: ");
+
+    va_start(args, fmt);
     _Psc_Interpreter_Print(self, fmt, args);
+    va_end(args);
+
     Psc_Token_Descruct(&self->current_token);
     self->lexer.eof = true;
     abort();
-
-    va_end(args);
 }
 
 static void _Psc_Interpreter_Eat(Psc_Interpreter_T *    self,

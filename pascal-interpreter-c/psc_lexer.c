@@ -53,6 +53,15 @@ static void _Psc_Lexer_Error(Psc_Lexer_T *self, const char *fmt, ...);
 static void _Psc_Lexer_Print(const Psc_Lexer_T *self, const char *fmt, ...);
 
 /**
+ * @brief _Psc_Lexer_vPrint
+ * @param self
+ * @param fmt
+ * @param args
+ */
+static void _Psc_Lexer_vPrint(const Psc_Lexer_T *self, const char *fmt,
+                              va_list args);
+
+/**
  * @brief _Psc_Lexer_Skip_Whitespace
  * @param self
  */
@@ -91,26 +100,36 @@ void _Psc_Lexer_Set_Pos(Psc_Lexer_T *self, size_t pos);
 static void _Psc_Lexer_Error(Psc_Lexer_T *self, const char *fmt, ...)
 {
     va_list args;
-    va_start(args, fmt);
 
-    _Psc_Lexer_Print(self, fmt, args);
+    printf("PSC Lexer Error: ");
+
+    va_start(args, fmt);
+    _Psc_Lexer_vPrint(self, fmt, args);
+    va_end(args);
+
     self->eof = true;
 
     abort();
+}
 
-    va_end(args);
+static void _Psc_Lexer_vPrint(const Psc_Lexer_T *self, const char *fmt,
+                              va_list args)
+{
+    (void)self;
+    vprintf(fmt, args);
+    printf("\n");
+    fflush(stdout);
 }
 
 static void _Psc_Lexer_Print(const Psc_Lexer_T *self, const char *fmt, ...)
 {
     va_list args;
-    (void)self;
 
     va_start(args, fmt);
-
-    vprintf(fmt, args);
-
+    _Psc_Lexer_vPrint(self, fmt, args);
     va_end(args);
+
+    printf("\n");
 }
 
 static void _Psc_Lexer_Skip_Whitespace(Psc_Lexer_T *self)

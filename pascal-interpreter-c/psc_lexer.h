@@ -43,7 +43,7 @@ typedef struct Psc_Lexer_Tag
 /*******************************************************************************
  * Functions Declarations
  ******************************************************************************/
-Psc_Lexer_T Psc_Lexer(char *text, size_t text_length);
+Psc_Lexer_T Psc_Lexer(const char *text, size_t text_length);
 
 /**
  * @brief Psc_Lexer_Get_Next_Token

@@ -114,9 +114,10 @@ void Psc_Token_Descruct(Psc_Token_T *self)
 {
     if (NULL != self->value_)
     {
-        // free(self->value_);
+        free(self->value_);
     }
-    self->value_ = NULL;
+
+    *self = Psc_Token_Eof();
 }
 
 Psc_Token_T Psc_Token_Eof()

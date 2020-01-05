@@ -188,7 +188,7 @@ void _Psc_Lexer_Set_Pos(Psc_Lexer_T *self, size_t pos)
 /*******************************************************************************
  * Functions Definitions
  ******************************************************************************/
-Psc_Lexer_T Psc_Lexer(char *text, size_t text_length)
+Psc_Lexer_T Psc_Lexer(const char *text, size_t text_length)
 {
     Psc_Lexer_T obj = {0};
     obj.text        = text;

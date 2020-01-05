@@ -7,7 +7,9 @@ CONFIG += thread
 CONFIG -= qt
 
 HEADERS += \
+    tst_pascal_interpreter.h \
     tst_pascal_token.h
+    tst_pascal_interpreter.h
 
 SOURCES += \
         main.C

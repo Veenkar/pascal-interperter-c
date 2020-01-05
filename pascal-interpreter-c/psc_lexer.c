@@ -46,6 +46,13 @@
 static void _Psc_Lexer_Error(Psc_Lexer_T *self, const char *fmt, ...);
 
 /**
+ * @brief _Psc_Lexer_Print
+ * @param self
+ * @param fmt
+ */
+static void _Psc_Lexer_Print(const Psc_Lexer_T *self, const char *fmt, ...);
+
+/**
  * @brief _Psc_Lexer_Skip_Whitespace
  * @param self
  */
@@ -64,6 +71,19 @@ static void _Psc_Lexer_Advance(Psc_Lexer_T *self);
  */
 static long _Psc_Lexer_Integer(Psc_Lexer_T *self);
 
+/**
+ * @brief _Psc_Lexer_Get_Char_Token
+ * @param self
+ * @return
+ */
+Psc_Token_T _Psc_Lexer_Get_Char_Token(Psc_Lexer_T *self);
+
+/**
+ * @brief _Psc_Lexer_Set_Pos
+ * @param pos
+ */
+void _Psc_Lexer_Set_Pos(Psc_Lexer_T *self, size_t pos);
+
 /*******************************************************************************
  * Private Functions Definitions
  ******************************************************************************/
@@ -73,9 +93,22 @@ static void _Psc_Lexer_Error(Psc_Lexer_T *self, const char *fmt, ...)
     va_list args;
     va_start(args, fmt);
 
-    vprintf(fmt, args);
+    _Psc_Lexer_Print(self, fmt, args);
     self->eof = true;
+
     abort();
+
+    va_end(args);
+}
+
+static void _Psc_Lexer_Print(const Psc_Lexer_T *self, const char *fmt, ...)
+{
+    va_list args;
+    (void)self;
+
+    va_start(args, fmt);
+
+    vprintf(fmt, args);
 
     va_end(args);
 }
@@ -90,21 +123,7 @@ static void _Psc_Lexer_Skip_Whitespace(Psc_Lexer_T *self)
 
 static void _Psc_Lexer_Advance(Psc_Lexer_T *self)
 {
-    if (self->eof)
-    {
-        return;
-    }
-
-    ++(self->pos);
-    if (self->pos >= self->text_length)
-    {
-        self->current_char = '\0';
-        self->eof          = true;
-    }
-    else
-    {
-        self->current_char = self->text[self->pos];
-    }
+    _Psc_Lexer_Set_Pos(self, self->pos + 1);
 }
 
 static long _Psc_Lexer_Integer(Psc_Lexer_T *self)
@@ -113,7 +132,7 @@ static long _Psc_Lexer_Integer(Psc_Lexer_T *self)
     char *current_char_ptr_ = &(self->text[self->pos]);
     long  val;
 
-    if (!self->eof || !isdigit(self->current_char))
+    if (self->eof || !isdigit(self->current_char))
     {
         _Psc_Lexer_Error(self, "end of file");
         return 0;
@@ -122,7 +141,8 @@ static long _Psc_Lexer_Integer(Psc_Lexer_T *self)
     val = strtol(current_char_ptr_, &strtol_char_ptr_, 10);
     if (NULL != strtol_char_ptr_ && strtol_char_ptr_ != current_char_ptr_)
     {
-        self->pos = (size_t)(strtol_char_ptr_ - current_char_ptr_);
+        _Psc_Lexer_Set_Pos(
+            self, self->pos + (size_t)(strtol_char_ptr_ - current_char_ptr_));
         return val;
     }
     else
@@ -132,6 +152,20 @@ static long _Psc_Lexer_Integer(Psc_Lexer_T *self)
     }
 }
 
+void _Psc_Lexer_Set_Pos(Psc_Lexer_T *self, size_t pos)
+{
+    self->pos = pos;
+
+    if (self->pos >= self->text_length || '\0' == self->text[self->pos])
+    {
+        self->current_char = '\0';
+        self->eof          = true;
+    }
+    else
+    {
+        self->current_char = self->text[self->pos];
+    }
+}
 /*******************************************************************************
  * Functions Definitions
  ******************************************************************************/
@@ -160,15 +194,18 @@ Psc_Lexer_T Psc_Lexer(char *text, size_t text_length)
 
 Psc_Token_T Psc_Lexer_Get_Next_Token(Psc_Lexer_T *self)
 {
+    Psc_Token_T res = Psc_Token_Eof();
+    (void)self;
+
     /** error handling */
     if (NULL == self)
     {
-        _Psc_Lexer_Error(self, "self argument is null.");
+        _Psc_Lexer_Print(self, "self argument is null.");
         return Psc_Token_Eof();
     }
     if (self->eof)
     {
-        _Psc_Lexer_Error(self, "end of file.");
+        _Psc_Lexer_Print(self, "end of file.");
         return Psc_Token_Eof();
     }
 
@@ -177,17 +214,49 @@ Psc_Token_T Psc_Lexer_Get_Next_Token(Psc_Lexer_T *self)
     {
         _Psc_Lexer_Skip_Whitespace(self);
     }
+
     if (isdigit(self->current_char))
     {
         long val = _Psc_Lexer_Integer(self);
-        return Psc_Token_Construct(PSC_TOKEN_INT, (void *)&val);
+        res      = Psc_Token_Construct(PSC_TOKEN_INT, (const void *)&val);
+    }
+    else
+    {
+        /* char token */
+        res = _Psc_Lexer_Get_Char_Token(self);
     }
 
-    _Psc_Lexer_Error(self, "unhandled character: %c", self->current_char);
+    if (PSC_TOKEN_EOF == res.type)
+    {
+        _Psc_Lexer_Error(self, "unhandled character: %c", self->current_char);
+    }
 
-    return Psc_Token_Eof();
+    return res;
 }
 
+Psc_Token_T _Psc_Lexer_Get_Char_Token(Psc_Lexer_T *self)
+{
+    const char current_char = self->current_char;
+    switch (current_char)
+    {
+        case '*':
+        {
+            _Psc_Lexer_Advance(self);
+            return Psc_Token_Construct(PSC_TOKEN_MUL,
+                                       (const void *)&current_char);
+        }
+        case '/':
+        {
+            _Psc_Lexer_Advance(self);
+            return Psc_Token_Construct(PSC_TOKEN_DIV,
+                                       (const void *)&current_char);
+        }
+        default:
+        {
+            return Psc_Token_Eof();
+        }
+    }
+}
 
 /*******************************************************************************
  * End psc_lexer.c

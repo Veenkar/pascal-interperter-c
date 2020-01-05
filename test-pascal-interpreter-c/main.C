@@ -1,4 +1,5 @@
 #include "tst_pascal_token.h"
+#include "tst_pascal_interpreter.h"
 
 #include <gtest/gtest.h>
 

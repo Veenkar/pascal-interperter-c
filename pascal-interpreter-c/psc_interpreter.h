@@ -1,6 +1,5 @@
-#pragma once
 /*******************************************************************************
- * psc_lexer.h
+ * file.x
  *
  *
  *
@@ -10,10 +9,7 @@
 /*******************************************************************************
  * Includes
  ******************************************************************************/
-#include "psc_token.h"
-
-#include <stdbool.h>
-#include <stddef.h>
+#include "psc_lexer.h"
 
 /*******************************************************************************
  * Define Macros
@@ -26,15 +22,12 @@
 /*******************************************************************************
  * Type Declarations
  ******************************************************************************/
-typedef struct Psc_Lexer_Tag
+typedef struct Psc_Interpreter_Tag
 {
-    char * text;
-    size_t text_length;
-    char   current_char;
-    size_t pos;
-    bool   eof; /* TODO: use status instead of EOF flag */
+    Psc_Lexer_T lexer;
+    Psc_Token_T current_token;
 
-} Psc_Lexer_T;
+} Psc_Interpreter_T;
 
 /*******************************************************************************
  * Object Declarations
@@ -43,19 +36,37 @@ typedef struct Psc_Lexer_Tag
 /*******************************************************************************
  * Functions Declarations
  ******************************************************************************/
-Psc_Lexer_T Psc_Lexer(char *text, size_t text_length);
+/**
+ * @brief Psc_Interpreter
+ * @param lexer
+ * @return
+ */
+Psc_Interpreter_T Psc_Interpreter_Construct(const Psc_Lexer_T *lexer);
 
 /**
- * @brief Psc_Lexer_Get_Next_Token
+ * @brief Psc_Interpreter_Destruct
+ * @param self
+ */
+void Psc_Interpreter_Destruct(Psc_Interpreter_T *self);
+
+/**
+ * @brief Psc_Interpreter_Value
  * @param self
  * @return
  */
-Psc_Token_T Psc_Lexer_Get_Next_Token(Psc_Lexer_T *self);
+long Psc_Interpreter_Factor(Psc_Interpreter_T *self);
+
+/**
+ * @brief Psc_Interpreter_Expr
+ * @param self
+ * @return
+ */
+long Psc_Interpreter_Expr(Psc_Interpreter_T *self);
 
 /*******************************************************************************
  * Functions Definitions
  ******************************************************************************/
 
 /*******************************************************************************
- * End psc_lexer.h
+ * End file.x
  ******************************************************************************/

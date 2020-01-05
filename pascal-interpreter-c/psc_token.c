@@ -77,7 +77,7 @@ Psc_Token_Mem_T _Psc_Token_Mem(Psc_Token_Type_T token_type)
 /*******************************************************************************
  * Functions Definitions
  ******************************************************************************/
-Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, void *value_)
+Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, const void *value_)
 {
     Psc_Token_T           obj           = Psc_Token(type, NULL);
     const Psc_Token_Mem_T token_memtype = _Psc_Token_Mem(type);
@@ -86,16 +86,16 @@ Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, void *value_)
     {
         case PSC_TOKEN_MEM_INT:
         {
-            long *value_mem_ = malloc(sizeof(long));
-            *value_mem_      = *(long *)value_;
+            long *value_mem_ = (long *)malloc(sizeof(long));
+            *value_mem_      = *(const long *)value_;
             obj.value_       = value_mem_;
             break;
         }
 
         case PSC_TOKEN_MEM_CHAR:
         {
-            char *value_mem_ = malloc(sizeof(char));
-            *value_mem_      = *(char *)value_;
+            char *value_mem_ = (char *)malloc(sizeof(char));
+            *value_mem_      = *(const char *)value_;
             obj.value_       = value_mem_;
             break;
         }
@@ -114,7 +114,7 @@ void Psc_Token_Descruct(Psc_Token_T *self)
 {
     if (NULL != self->value_)
     {
-        free(self->value_);
+        // free(self->value_);
     }
     self->value_ = NULL;
 }

@@ -38,7 +38,6 @@ void Pascal_Psc_Token_Test(Psc_Token_Type_T token_type, const T token_value)
     }
 
     /** DESTRUCT */
-    free(psc_token.value_);
     Psc_Token_Descruct(&psc_token);
 }
 

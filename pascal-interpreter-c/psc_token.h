@@ -77,7 +77,7 @@ typedef struct Psc_Token_Tag
  * @param value_
  * @return
  */
-Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, void *value_);
+Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, const void *value_);
 
 /**
  * @brief Psc_Token_Descruct

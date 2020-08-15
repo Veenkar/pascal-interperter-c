@@ -39,6 +39,9 @@
 /*******************************************************************************
  * Type Declarations
  ******************************************************************************/
+typedef long Psc_Int_T;
+typedef char Psc_Char_T;
+
 typedef enum Psc_Token_Mem_Tag
 {
     PSC_TOKEN_MEM_INT,
@@ -56,18 +59,18 @@ typedef enum Psc_Token_Type_Tag
 
 } Psc_Token_Type_T;
 
-typedef union Psc_Token_value_Tag
+typedef union Psc_Token_Value_Tag
 {
-    long    v_int;
-    char    v_char;
-    char *  v_str;
+    Psc_Int_T   v_int;
+    Psc_Char_T  v_char;
+    char *      v_str;
 
-} Psc_Token_value_T;
+} Psc_Token_Value_T;
 
 typedef struct Psc_Token_Tag
 {
     Psc_Token_Type_T    type;
-    Psc_Token_value_T   value;
+    Psc_Token_Value_T   value;
 
 } Psc_Token_T;
 
@@ -88,7 +91,7 @@ typedef struct Psc_Token_Tag
  * @param value
  * @return
  */
-Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, const void *value);
+Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, Psc_Token_Value_T value);
 
 /**
  * @brief Psc_Token_Descruct
@@ -113,6 +116,13 @@ Psc_Token_T Psc_Token_Eof(void);
  * @return
  */
 int Psc_Token_To_String(const Psc_Token_T *self, char *buf_, size_t bufsize);
+
+/**
+ * @brief Psc_Token_Get_Memtype
+ * @param self
+ * @return
+ */
+Psc_Token_Mem_T Psc_Token_Get_Memtype(const Psc_Token_T * self);
 
 /*******************************************************************************
  * End psc_token.x

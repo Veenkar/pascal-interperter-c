@@ -131,10 +131,10 @@ void Psc_Interpreter_Destruct(Psc_Interpreter_T *self)
     Psc_Token_Descruct(&self->current_token);
 }
 
-long Psc_Interpreter_Factor(Psc_Interpreter_T *self)
+Psc_Int_T Psc_Interpreter_Factor(Psc_Interpreter_T *self)
 {
     Psc_Token_T token;
-    long        value;
+    Psc_Int_T        value;
 
     token = self->current_token;
     _Psc_Interpreter_Eat(self, PSC_TOKEN_INT);
@@ -144,9 +144,9 @@ long Psc_Interpreter_Factor(Psc_Interpreter_T *self)
     return value;
 }
 
-long Psc_Interpreter_Term(Psc_Interpreter_T *self)
+Psc_Int_T Psc_Interpreter_Term(Psc_Interpreter_T *self)
 {
-    long result = Psc_Interpreter_Factor(self);
+    Psc_Int_T result = Psc_Interpreter_Factor(self);
 
     while (PSC_TOKEN_MUL == self->current_token.type ||
            PSC_TOKEN_DIV == self->current_token.type)
@@ -170,9 +170,9 @@ long Psc_Interpreter_Term(Psc_Interpreter_T *self)
 }
 
 
-long Psc_Interpreter_Expr(Psc_Interpreter_T *self)
+Psc_Int_T Psc_Interpreter_Expr(Psc_Interpreter_T *self)
 {
-    long result = Psc_Interpreter_Term(self);
+    Psc_Int_T result = Psc_Interpreter_Term(self);
 
     while (PSC_TOKEN_ADD == self->current_token.type ||
            PSC_TOKEN_SUB == self->current_token.type)

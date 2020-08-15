@@ -79,7 +79,7 @@ Psc_Token_Mem_T _Psc_Token_Mem(Psc_Token_Type_T token_type)
 /*******************************************************************************
  * Functions Definitions
  ******************************************************************************/
-Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, const void *value)
+Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, Psc_Token_Value_T value)
 {
     Psc_Token_T           obj           = _Psc_Empty_Token(type);
     const Psc_Token_Mem_T token_memtype = _Psc_Token_Mem(type);
@@ -89,26 +89,19 @@ Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, const void *value)
         case PSC_TOKEN_MEM_STR:
         {
             char *valuemem_ = (char *)malloc(STR_MAX_SIZE);
-            *valuemem_      = *(const char *)value;
-            strncpy(valuemem_, value, STR_MAX_SIZE);
+            strncpy(valuemem_, value.v_str, STR_MAX_SIZE);
             obj.value.v_str = valuemem_;
             break;
         }
-        case PSC_TOKEN_MEM_INT:
-        {
-            obj.value.v_int = * ((const long*)value);
-            break;
-        }
-        case PSC_TOKEN_MEM_CHAR:
-        {
-            obj.value.v_char = * ((const char*)value);
-            break;
-        }
         case PSC_TOKEN_MEM_NULL:
-        default:
         {
             /* TODO: add error handling (error + abort) here */
             obj.value.v_int = 0;
+            break;
+        }
+        default:
+        {
+            obj.value = value;
             break;
         }
     }
@@ -118,7 +111,7 @@ Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, const void *value)
 
 void Psc_Token_Descruct(Psc_Token_T *self)
 {
-    const Psc_Token_Mem_T token_memtype = _Psc_Token_Mem(self->type);
+    const Psc_Token_Mem_T token_memtype = Psc_Token_Get_Memtype(self);
     if ( (token_memtype == PSC_TOKEN_MEM_STR) && (NULL != self->value.v_str) )
     {
         free(self->value.v_str);
@@ -134,47 +127,56 @@ Psc_Token_T Psc_Token_Eof()
 
 int Psc_Token_To_String(const Psc_Token_T *self, char *buf_, size_t bufsize)
 {
-    Psc_Token_value_T     val = self->value;
-    const char *          psc_token_enum_name;
-    const Psc_Token_Mem_T token_memtype = _Psc_Token_Mem(self->type);
+
 
     if (NULL == self)
     {
         return snprintf(buf_, bufsize, "Psc_Token([nullptr])");
     }
-
-    /** convert psc_token enum to string */
-    assert(self->type < N_ELEMS(_psc_token_names));
-    psc_token_enum_name = _psc_token_names[self->type];
-
-    switch (token_memtype)
+    else
     {
-        case PSC_TOKEN_MEM_INT:
-        {
-            long int_val = val.v_int;
-            return snprintf(buf_, bufsize, "Psc_Token(%s, %lu)",
-                            psc_token_enum_name, int_val);
-        }
+        const char *          psc_token_enum_name;
+        const Psc_Token_Mem_T token_memtype = Psc_Token_Get_Memtype(self);
+        Psc_Token_Value_T     val  = self->value;
 
-        case PSC_TOKEN_MEM_CHAR:
-        {
-            char char_val = val.v_char;
-            return snprintf(buf_, bufsize, "Psc_Token(%s, %c)",
-                            psc_token_enum_name, char_val);
-        }
+        /** convert psc_token enum to string */
+        assert(self->type < N_ELEMS(_psc_token_names));
+        psc_token_enum_name = _psc_token_names[self->type];
 
-        case PSC_TOKEN_MEM_NULL:
+        switch (token_memtype)
         {
-            return snprintf(buf_, bufsize, "Psc_Token(%s)",
-                            psc_token_enum_name);
-        }
+            case PSC_TOKEN_MEM_INT:
+            {
+                Psc_Int_T int_val = val.v_int;
+                return snprintf(buf_, bufsize, "Psc_Token(%s, %lu)",
+                                psc_token_enum_name, int_val);
+            }
 
-        default:
-        {
-            return snprintf(buf_, bufsize, "Psc_Token([unknown token %d])",
-                            self->type);
+            case PSC_TOKEN_MEM_CHAR:
+            {
+                Psc_Char_T char_val = val.v_char;
+                return snprintf(buf_, bufsize, "Psc_Token(%s, %c)",
+                                psc_token_enum_name, char_val);
+            }
+
+            case PSC_TOKEN_MEM_NULL:
+            {
+                return snprintf(buf_, bufsize, "Psc_Token(%s)",
+                                psc_token_enum_name);
+            }
+
+            default:
+            {
+                return snprintf(buf_, bufsize, "Psc_Token([unknown token %d])",
+                                self->type);
+            }
         }
     }
+}
+
+Psc_Token_Mem_T Psc_Token_Get_Memtype(const Psc_Token_T * self)
+{
+    return _Psc_Token_Mem(self->type);
 }
 
 /*******************************************************************************

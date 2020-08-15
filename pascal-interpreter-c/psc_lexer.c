@@ -78,7 +78,7 @@ static void _Psc_Lexer_Advance(Psc_Lexer_T *self);
  * @param self
  * @return
  */
-static long _Psc_Lexer_Integer(Psc_Lexer_T *self);
+static Psc_Int_T _Psc_Lexer_Integer(Psc_Lexer_T *self);
 
 /**
  * @brief _Psc_Lexer_Get_Char_Token
@@ -145,11 +145,11 @@ static void _Psc_Lexer_Advance(Psc_Lexer_T *self)
     _Psc_Lexer_Set_Pos(self, self->pos + 1);
 }
 
-static long _Psc_Lexer_Integer(Psc_Lexer_T *self)
+static Psc_Int_T _Psc_Lexer_Integer(Psc_Lexer_T *self)
 {
     char *      strtol_char_ptr_;
     const char *current_char_ptr_ = &(self->text[self->pos]);
-    long        val;
+    Psc_Int_T        val;
 
     if (self->eof || !isdigit(self->current_char))
     {
@@ -236,8 +236,9 @@ Psc_Token_T Psc_Lexer_Get_Next_Token(Psc_Lexer_T *self)
 
     if (isdigit(self->current_char))
     {
-        long val = _Psc_Lexer_Integer(self);
-        res      = Psc_Token_Construct(PSC_TOKEN_INT, (const void *)&val);
+        Psc_Token_Value_T token_value;
+        token_value.v_int = _Psc_Lexer_Integer(self);
+        res      = Psc_Token_Construct(PSC_TOKEN_INT, token_value);
     }
     else
     {
@@ -256,31 +257,29 @@ Psc_Token_T Psc_Lexer_Get_Next_Token(Psc_Lexer_T *self)
 Psc_Token_T _Psc_Lexer_Get_Char_Token(Psc_Lexer_T *self)
 {
     const char current_char = self->current_char;
+    Psc_Token_Value_T token_value;
+    token_value.v_char = current_char;
     switch (current_char)
     {
         case '*':
         {
             _Psc_Lexer_Advance(self);
-            return Psc_Token_Construct(PSC_TOKEN_MUL,
-                                       (const void *)&current_char);
+            return Psc_Token_Construct(PSC_TOKEN_MUL, token_value);
         }
         case '/':
         {
             _Psc_Lexer_Advance(self);
-            return Psc_Token_Construct(PSC_TOKEN_DIV,
-                                       (const void *)&current_char);
+            return Psc_Token_Construct(PSC_TOKEN_DIV, token_value);
         }
         case '+':
         {
             _Psc_Lexer_Advance(self);
-            return Psc_Token_Construct(PSC_TOKEN_ADD,
-                                       (const void *)&current_char);
+            return Psc_Token_Construct(PSC_TOKEN_ADD, token_value);
         }
         case '-':
         {
             _Psc_Lexer_Advance(self);
-            return Psc_Token_Construct(PSC_TOKEN_SUB,
-                                       (const void *)&current_char);
+            return Psc_Token_Construct(PSC_TOKEN_SUB, token_value);
         }
         default:
         {

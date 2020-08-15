@@ -15,7 +15,7 @@ using namespace testing;
 typedef struct Calc_Assert_Tag
 {
     std::string expr;
-    long expected_res;
+    Psc_Int_T expected_res;
 
 } Calc_Assert_T;
 
@@ -32,7 +32,7 @@ TEST(pascal_psc_interpreter, pascal_psc_interpreter_mul)
         Psc_Lexer_T lexer = Psc_Lexer(expr_text.c_str(), expr_text.size());
 
         Psc_Interpreter_T interpreter = Psc_Interpreter_Construct(&lexer);
-        long              val         = 0;
+        Psc_Int_T              val         = 0;
         val                           = Psc_Interpreter_Expr(&interpreter);
 
         std::cout << "PSC_INTERPRETER input: " << interpreter.lexer.text

@@ -19,7 +19,7 @@ void Pascal_Psc_Token_Test(Psc_Token_Type_T token_type, const T token_value)
     /** CONSTRUCT INT PSC_TOKEN */
     {
         psc_token = Psc_Token_Construct(token_type, (void *)&token_value);
-        EXPECT_NE(nullptr, psc_token.value_);
+        EXPECT_EQ(token_value, psc_token.value.v_int);
         EXPECT_EQ(psc_token.type, token_type);
     }
 

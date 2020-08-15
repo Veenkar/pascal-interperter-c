@@ -30,11 +30,11 @@
 /*******************************************************************************
  * Function-Like Macros
  ******************************************************************************/
-#define PSC_TOKEN_X_ENUM(ENUM_VAL_NAME, ...) ENUM_VAL_NAME
+#define PSC_TOKEN_X_ENUM(ENUM_valNAME, ...) ENUM_valNAME
 
 #define PSC_TOKEN_X_STR(STR_CONTENT, ...) #STR_CONTENT
 
-#define PSC_TOKEN_X_ENUM_2(SKIP_0, ENUM_VAL_NAME, ...) ENUM_VAL_NAME
+#define PSC_TOKEN_X_ENUM_2(SKIP_0, ENUM_valNAME, ...) ENUM_valNAME
 
 /*******************************************************************************
  * Type Declarations
@@ -43,6 +43,7 @@ typedef enum Psc_Token_Mem_Tag
 {
     PSC_TOKEN_MEM_INT,
     PSC_TOKEN_MEM_CHAR,
+    PSC_TOKEN_MEM_STR,
     PSC_TOKEN_MEM_NULL,
     COUNT_PSC_TOKEN_MEM
 
@@ -55,10 +56,18 @@ typedef enum Psc_Token_Type_Tag
 
 } Psc_Token_Type_T;
 
+typedef union Psc_Token_value_Tag
+{
+    long    v_int;
+    char    v_char;
+    char *  v_str;
+
+} Psc_Token_value_T;
+
 typedef struct Psc_Token_Tag
 {
-    Psc_Token_Type_T type;
-    void *           value_;
+    Psc_Token_Type_T    type;
+    Psc_Token_value_T   value;
 
 } Psc_Token_T;
 
@@ -76,10 +85,10 @@ typedef struct Psc_Token_Tag
 /**
  * @brief Psc_Token_Construct
  * @param type
- * @param value_
+ * @param value
  * @return
  */
-Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, const void *value_);
+Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, const void *value);
 
 /**
  * @brief Psc_Token_Descruct

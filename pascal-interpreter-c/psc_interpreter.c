@@ -138,7 +138,7 @@ long Psc_Interpreter_Factor(Psc_Interpreter_T *self)
 
     token = self->current_token;
     _Psc_Interpreter_Eat(self, PSC_TOKEN_INT);
-    value = *((long *)token.value_);
+    value = token.value.v_int;
     Psc_Token_Descruct(&token);
 
     return value;

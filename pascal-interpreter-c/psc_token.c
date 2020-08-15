@@ -14,6 +14,7 @@
 /* project */
 #include "psc_token.h"
 #include "stdlib.h"
+#include "string.h"
 
 /* system */
 #include <assert.h>
@@ -22,11 +23,12 @@
 /*******************************************************************************
  * Define Macros
  ******************************************************************************/
-#define N_ELEMS(el) (sizeof(el) / sizeof((el)[0u]))
+#define STR_MAX_SIZE    (256u)
 
 /*******************************************************************************
  * Function-Like Macros
  ******************************************************************************/
+#define N_ELEMS(el) (sizeof(el) / sizeof((el)[0u]))
 
 /*******************************************************************************
  * Type Declarations
@@ -51,20 +53,20 @@ static Psc_Token_Mem_T _Psc_Token_Mem(Psc_Token_Type_T token_type);
 /**
  * @brief Psc_Token
  * @param type
- * @param value_
+ * @param value
  * @return
  */
-static Psc_Token_T Psc_Token(Psc_Token_Type_T type, void *value_);
+static Psc_Token_T _Psc_Empty_Token(Psc_Token_Type_T type);
 
 /*******************************************************************************
  * Private Functions Definitions
  ******************************************************************************/
 
-static Psc_Token_T Psc_Token(Psc_Token_Type_T type, void *value_)
+static Psc_Token_T _Psc_Empty_Token(Psc_Token_Type_T type)
 {
     Psc_Token_T obj = {0};
     obj.type        = type;
-    obj.value_      = value_;
+    obj.value.v_int = 0;
     return obj;
 }
 
@@ -77,34 +79,38 @@ Psc_Token_Mem_T _Psc_Token_Mem(Psc_Token_Type_T token_type)
 /*******************************************************************************
  * Functions Definitions
  ******************************************************************************/
-Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, const void *value_)
+Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, const void *value)
 {
-    Psc_Token_T           obj           = Psc_Token(type, NULL);
+    Psc_Token_T           obj           = _Psc_Empty_Token(type);
     const Psc_Token_Mem_T token_memtype = _Psc_Token_Mem(type);
 
     switch (token_memtype)
     {
+        case PSC_TOKEN_MEM_STR:
+        {
+            char *valuemem_ = (char *)malloc(STR_MAX_SIZE);
+            *valuemem_      = *(const char *)value;
+            strncpy(valuemem_, value, STR_MAX_SIZE);
+            obj.value.v_str = valuemem_;
+            break;
+        }
         case PSC_TOKEN_MEM_INT:
         {
-            long *value_mem_ = (long *)malloc(sizeof(long));
-            *value_mem_      = *(const long *)value_;
-            obj.value_       = value_mem_;
+            obj.value.v_int = * ((const long*)value);
             break;
         }
-
         case PSC_TOKEN_MEM_CHAR:
         {
-            char *value_mem_ = (char *)malloc(sizeof(char));
-            *value_mem_      = *(const char *)value_;
-            obj.value_       = value_mem_;
+            obj.value.v_char = * ((const char*)value);
             break;
         }
-
         case PSC_TOKEN_MEM_NULL:
         default:
+        {
             /* TODO: add error handling (error + abort) here */
-            obj.value_ = NULL;
+            obj.value.v_int = 0;
             break;
+        }
     }
 
     return obj;
@@ -112,9 +118,10 @@ Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, const void *value_)
 
 void Psc_Token_Descruct(Psc_Token_T *self)
 {
-    if (NULL != self->value_)
+    const Psc_Token_Mem_T token_memtype = _Psc_Token_Mem(self->type);
+    if ( (token_memtype == PSC_TOKEN_MEM_STR) && (NULL != self->value.v_str) )
     {
-        free(self->value_);
+        free(self->value.v_str);
     }
 
     *self = Psc_Token_Eof();
@@ -122,12 +129,12 @@ void Psc_Token_Descruct(Psc_Token_T *self)
 
 Psc_Token_T Psc_Token_Eof()
 {
-    return Psc_Token(PSC_TOKEN_EOF, NULL);
+    return _Psc_Empty_Token(PSC_TOKEN_EOF);
 }
 
 int Psc_Token_To_String(const Psc_Token_T *self, char *buf_, size_t bufsize)
 {
-    void *                val_ = self->value_;
+    Psc_Token_value_T     val = self->value;
     const char *          psc_token_enum_name;
     const Psc_Token_Mem_T token_memtype = _Psc_Token_Mem(self->type);
 
@@ -144,14 +151,14 @@ int Psc_Token_To_String(const Psc_Token_T *self, char *buf_, size_t bufsize)
     {
         case PSC_TOKEN_MEM_INT:
         {
-            int int_val = *((int *)val_);
-            return snprintf(buf_, bufsize, "Psc_Token(%s, %d)",
+            long int_val = val.v_int;
+            return snprintf(buf_, bufsize, "Psc_Token(%s, %lu)",
                             psc_token_enum_name, int_val);
         }
 
         case PSC_TOKEN_MEM_CHAR:
         {
-            char char_val = *((char *)val_);
+            char char_val = val.v_char;
             return snprintf(buf_, bufsize, "Psc_Token(%s, %c)",
                             psc_token_enum_name, char_val);
         }

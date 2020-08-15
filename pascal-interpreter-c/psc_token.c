@@ -86,6 +86,7 @@ Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, Psc_Token_Value_T value)
 
     switch (token_memtype)
     {
+        #if 0
         case PSC_TOKEN_MEM_STR:
         {
             char *valuemem_ = (char *)malloc(STR_MAX_SIZE);
@@ -93,6 +94,7 @@ Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, Psc_Token_Value_T value)
             obj.value.v_str = valuemem_;
             break;
         }
+        #endif
         case PSC_TOKEN_MEM_NULL:
         {
             /* TODO: add error handling (error + abort) here */
@@ -111,11 +113,13 @@ Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, Psc_Token_Value_T value)
 
 void Psc_Token_Descruct(Psc_Token_T *self)
 {
+    #if 0
     const Psc_Token_Mem_T token_memtype = Psc_Token_Get_Memtype(self);
     if ( (token_memtype == PSC_TOKEN_MEM_STR) && (NULL != self->value.v_str) )
     {
         free(self->value.v_str);
     }
+    #endif
 
     *self = Psc_Token_Eof();
 }

@@ -42,6 +42,13 @@
 typedef long Psc_Int_T;
 typedef char Psc_Char_T;
 
+typedef struct Psc_Str_Tag
+{
+    char * data;
+    size_t size;
+
+} Psc_Str_T;
+
 typedef enum Psc_Token_Mem_Tag
 {
     PSC_TOKEN_MEM_INT,
@@ -63,7 +70,7 @@ typedef union Psc_Token_Value_Tag
 {
     Psc_Int_T   v_int;
     Psc_Char_T  v_char;
-    char *      v_str;
+    Psc_Str_T   v_str;
 
 } Psc_Token_Value_T;
 

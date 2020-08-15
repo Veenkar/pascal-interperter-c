@@ -12,19 +12,33 @@ extern "C"
 
 using namespace testing;
 
+typedef struct Calc_Assert_Tag
+{
+    std::string expr;
+    long expected_res;
+
+} Calc_Assert_T;
+
 TEST(pascal_psc_interpreter, pascal_psc_interpreter_mul)
 {
-#define PSC_MUL_TEST_TEXT "2*5"
-    const char *text  = PSC_MUL_TEST_TEXT;
-    Psc_Lexer_T lexer = Psc_Lexer(text, sizeof(PSC_MUL_TEST_TEXT));
-#undef PSC_MUL_TEST_TEXT
-    Psc_Interpreter_T interpreter = Psc_Interpreter_Construct(&lexer);
-    long              val         = 0;
-    val                           = Psc_Interpreter_Expr(&interpreter);
+    const Calc_Assert_T calc_asserts[] = {
+        {"2*5",     10},
+        {"2+2*2",   6},
+    };
 
-    std::cout << "PSC_INTERPRETER input: " << interpreter.lexer.text
-              << " res: " << val << std::endl;
-    Psc_Interpreter_Destruct(&interpreter);
+    for (auto && calc_assert: calc_asserts)
+    {
+        auto expr_text = calc_assert.expr;
+        Psc_Lexer_T lexer = Psc_Lexer(expr_text.c_str(), expr_text.size());
 
-    EXPECT_EQ(val, 10);
+        Psc_Interpreter_T interpreter = Psc_Interpreter_Construct(&lexer);
+        long              val         = 0;
+        val                           = Psc_Interpreter_Expr(&interpreter);
+
+        std::cout << "PSC_INTERPRETER input: " << interpreter.lexer.text
+                  << " res: " << val << std::endl;
+        Psc_Interpreter_Destruct(&interpreter);
+
+        EXPECT_EQ(val, calc_assert.expected_res);
+    }
 }

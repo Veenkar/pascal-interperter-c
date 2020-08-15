@@ -144,7 +144,7 @@ long Psc_Interpreter_Factor(Psc_Interpreter_T *self)
     return value;
 }
 
-long Psc_Interpreter_Expr(Psc_Interpreter_T *self)
+long Psc_Interpreter_Term(Psc_Interpreter_T *self)
 {
     long result = Psc_Interpreter_Factor(self);
 
@@ -152,16 +152,42 @@ long Psc_Interpreter_Expr(Psc_Interpreter_T *self)
            PSC_TOKEN_DIV == self->current_token.type)
     {
         Psc_Token_T token = self->current_token;
-        if (PSC_TOKEN_DIV == token.type)
+        if (PSC_TOKEN_MUL == token.type)
+        {
+            _Psc_Interpreter_Eat(self, PSC_TOKEN_MUL);
+            result = result * Psc_Interpreter_Factor(self);
+            Psc_Token_Descruct(&token);
+        }
+        else if (PSC_TOKEN_DIV == token.type)
         {
             _Psc_Interpreter_Eat(self, PSC_TOKEN_DIV);
             result = result / Psc_Interpreter_Factor(self);
             Psc_Token_Descruct(&token);
         }
-        else if (PSC_TOKEN_MUL == token.type)
+    }
+
+    return result;
+}
+
+
+long Psc_Interpreter_Expr(Psc_Interpreter_T *self)
+{
+    long result = Psc_Interpreter_Term(self);
+
+    while (PSC_TOKEN_ADD == self->current_token.type ||
+           PSC_TOKEN_SUB == self->current_token.type)
+    {
+        Psc_Token_T token = self->current_token;
+        if (PSC_TOKEN_ADD == token.type)
         {
-            _Psc_Interpreter_Eat(self, PSC_TOKEN_MUL);
-            result = result * Psc_Interpreter_Factor(self);
+            _Psc_Interpreter_Eat(self, PSC_TOKEN_ADD);
+            result = result + Psc_Interpreter_Term(self);
+            Psc_Token_Descruct(&token);
+        }
+        else if (PSC_TOKEN_SUB == token.type)
+        {
+            _Psc_Interpreter_Eat(self, PSC_TOKEN_SUB);
+            result = result - Psc_Interpreter_Term(self);
             Psc_Token_Descruct(&token);
         }
     }

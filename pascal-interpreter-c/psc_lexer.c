@@ -224,7 +224,7 @@ Psc_Token_T Psc_Lexer_Get_Next_Token(Psc_Lexer_T *self)
     }
     if (self->eof)
     {
-        _Psc_Lexer_Print(self, "end of file.");
+        //_Psc_Lexer_Print(self, "end of file.");
         return Psc_Token_Eof();
     }
 
@@ -268,6 +268,18 @@ Psc_Token_T _Psc_Lexer_Get_Char_Token(Psc_Lexer_T *self)
         {
             _Psc_Lexer_Advance(self);
             return Psc_Token_Construct(PSC_TOKEN_DIV,
+                                       (const void *)&current_char);
+        }
+        case '+':
+        {
+            _Psc_Lexer_Advance(self);
+            return Psc_Token_Construct(PSC_TOKEN_ADD,
+                                       (const void *)&current_char);
+        }
+        case '-':
+        {
+            _Psc_Lexer_Advance(self);
+            return Psc_Token_Construct(PSC_TOKEN_SUB,
                                        (const void *)&current_char);
         }
         default:

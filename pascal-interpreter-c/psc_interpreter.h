@@ -63,6 +63,13 @@ long Psc_Interpreter_Factor(Psc_Interpreter_T *self);
  */
 long Psc_Interpreter_Expr(Psc_Interpreter_T *self);
 
+/**
+ * @brief Psc_Interpreter_Term
+ * @param self
+ * @return
+ */
+long Psc_Interpreter_Term(Psc_Interpreter_T *self);
+
 /*******************************************************************************
  * Functions Definitions
  ******************************************************************************/

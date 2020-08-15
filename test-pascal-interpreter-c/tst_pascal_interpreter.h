@@ -24,6 +24,7 @@ TEST(pascal_psc_interpreter, pascal_psc_interpreter_mul)
     const Calc_Assert_T calc_asserts[] = {
         {"2*5",     10},
         {"2+2*2",   6},
+        {"(2+2)*2", 8},
     };
 
     for (auto && calc_assert: calc_asserts)

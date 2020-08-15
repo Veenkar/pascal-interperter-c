@@ -130,9 +130,18 @@ Psc_Int_T Psc_Interpreter_Factor(Psc_Interpreter_T *self)
     Psc_Token_T token;
     Psc_Int_T        value;
 
-    token = self->current_token;
-    _Psc_Interpreter_Eat(self, PSC_TOKEN_INT);
-    value = token.value.v_int;
+    if (PSC_TOKEN_L_PAREN == self->current_token.type)
+    {
+        _Psc_Interpreter_Eat(self, PSC_TOKEN_L_PAREN);
+        value = Psc_Interpreter_Expr(self);
+        _Psc_Interpreter_Eat(self, PSC_TOKEN_R_PAREN);
+    }
+    else
+    {
+        token = self->current_token;
+        _Psc_Interpreter_Eat(self, PSC_TOKEN_INT);
+        value = token.value.v_int;
+    }
 
     return value;
 }

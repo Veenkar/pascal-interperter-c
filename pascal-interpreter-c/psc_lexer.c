@@ -26,14 +26,29 @@
 /*******************************************************************************
  * Function-Like Macros
  ******************************************************************************/
+#define N_ELEMS(el) (sizeof(el) / sizeof((el)[0u]))
 
 /*******************************************************************************
  * Type Declarations
  ******************************************************************************/
+typedef struct Psc_Char_Token_Entry_Tag
+{
+    char repr;
+    Psc_Token_Type_T token_type;
+
+} Psc_Char_Token_Entry_T;
 
 /*******************************************************************************
  * Object Declarations
  ******************************************************************************/
+static const Psc_Char_Token_Entry_T _psc_char_token_dict[] = {
+    {'*', PSC_TOKEN_MUL},
+    {'/', PSC_TOKEN_DIV},
+    {'+', PSC_TOKEN_ADD},
+    {'-', PSC_TOKEN_SUB},
+    {'(', PSC_TOKEN_L_PAREN},
+    {')', PSC_TOKEN_R_PAREN},
+};
 
 /*******************************************************************************
  * Functions Declarations
@@ -258,34 +273,21 @@ Psc_Token_T _Psc_Lexer_Get_Char_Token(Psc_Lexer_T *self)
 {
     const char current_char = self->current_char;
     Psc_Token_Value_T token_value;
+    size_t repr_it;
+
     token_value.v_char = current_char;
-    switch (current_char)
+
+    for (repr_it = 0; repr_it < N_ELEMS(_psc_char_token_dict); ++repr_it)
     {
-        case '*':
+        if (_psc_char_token_dict[repr_it].repr == current_char)
         {
             _Psc_Lexer_Advance(self);
-            return Psc_Token(PSC_TOKEN_MUL, token_value);
+            return Psc_Token(_psc_char_token_dict[repr_it].token_type, token_value);
         }
-        case '/':
-        {
-            _Psc_Lexer_Advance(self);
-            return Psc_Token(PSC_TOKEN_DIV, token_value);
-        }
-        case '+':
-        {
-            _Psc_Lexer_Advance(self);
-            return Psc_Token(PSC_TOKEN_ADD, token_value);
-        }
-        case '-':
-        {
-            _Psc_Lexer_Advance(self);
-            return Psc_Token(PSC_TOKEN_SUB, token_value);
-        }
-        default:
-        {
-            return Psc_Token_Eof();
-        }
+
     }
+
+    return Psc_Token_Eof();
 }
 
 /*******************************************************************************

@@ -97,7 +97,6 @@ static void _Psc_Interpreter_Error(Psc_Interpreter_T *self, const char *fmt,
     _Psc_Interpreter_Print(self, fmt, args);
     va_end(args);
 
-    Psc_Token_Descruct(&self->current_token);
     self->lexer.eof = true;
     abort();
 }
@@ -126,11 +125,6 @@ Psc_Interpreter_T Psc_Interpreter_Construct(const Psc_Lexer_T *lexer)
     return obj;
 }
 
-void Psc_Interpreter_Destruct(Psc_Interpreter_T *self)
-{
-    Psc_Token_Descruct(&self->current_token);
-}
-
 Psc_Int_T Psc_Interpreter_Factor(Psc_Interpreter_T *self)
 {
     Psc_Token_T token;
@@ -139,7 +133,6 @@ Psc_Int_T Psc_Interpreter_Factor(Psc_Interpreter_T *self)
     token = self->current_token;
     _Psc_Interpreter_Eat(self, PSC_TOKEN_INT);
     value = token.value.v_int;
-    Psc_Token_Descruct(&token);
 
     return value;
 }
@@ -156,13 +149,11 @@ Psc_Int_T Psc_Interpreter_Term(Psc_Interpreter_T *self)
         {
             _Psc_Interpreter_Eat(self, PSC_TOKEN_MUL);
             result = result * Psc_Interpreter_Factor(self);
-            Psc_Token_Descruct(&token);
         }
         else if (PSC_TOKEN_DIV == token.type)
         {
             _Psc_Interpreter_Eat(self, PSC_TOKEN_DIV);
             result = result / Psc_Interpreter_Factor(self);
-            Psc_Token_Descruct(&token);
         }
     }
 
@@ -182,13 +173,11 @@ Psc_Int_T Psc_Interpreter_Expr(Psc_Interpreter_T *self)
         {
             _Psc_Interpreter_Eat(self, PSC_TOKEN_ADD);
             result = result + Psc_Interpreter_Term(self);
-            Psc_Token_Descruct(&token);
         }
         else if (PSC_TOKEN_SUB == token.type)
         {
             _Psc_Interpreter_Eat(self, PSC_TOKEN_SUB);
             result = result - Psc_Interpreter_Term(self);
-            Psc_Token_Descruct(&token);
         }
     }
 

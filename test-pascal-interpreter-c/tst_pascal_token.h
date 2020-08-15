@@ -18,7 +18,7 @@ void Pascal_Psc_Token_Test(Psc_Token_Type_T token_type, Psc_Token_Value_T token_
     /** CONSTRUCT INT PSC_TOKEN */
     {
 
-        psc_token = Psc_Token_Construct(token_type, token_value);
+        psc_token = Psc_Token(token_type, token_value);
         EXPECT_EQ(token_value.v_int, psc_token.value.v_int);
         EXPECT_EQ(psc_token.type, token_type);
     }
@@ -50,9 +50,6 @@ void Pascal_Psc_Token_Test(Psc_Token_Type_T token_type, Psc_Token_Value_T token_
         std::cout << "searching for: " << search_str << std::endl;
         EXPECT_NE(std::string::npos, std::string(buf).find(search_str));
     }
-
-    /** DESTRUCT */
-    Psc_Token_Descruct(&psc_token);
 }
 
 

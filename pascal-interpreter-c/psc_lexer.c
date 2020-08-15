@@ -238,7 +238,7 @@ Psc_Token_T Psc_Lexer_Get_Next_Token(Psc_Lexer_T *self)
     {
         Psc_Token_Value_T token_value;
         token_value.v_int = _Psc_Lexer_Integer(self);
-        res      = Psc_Token_Construct(PSC_TOKEN_INT, token_value);
+        res      = Psc_Token(PSC_TOKEN_INT, token_value);
     }
     else
     {
@@ -264,22 +264,22 @@ Psc_Token_T _Psc_Lexer_Get_Char_Token(Psc_Lexer_T *self)
         case '*':
         {
             _Psc_Lexer_Advance(self);
-            return Psc_Token_Construct(PSC_TOKEN_MUL, token_value);
+            return Psc_Token(PSC_TOKEN_MUL, token_value);
         }
         case '/':
         {
             _Psc_Lexer_Advance(self);
-            return Psc_Token_Construct(PSC_TOKEN_DIV, token_value);
+            return Psc_Token(PSC_TOKEN_DIV, token_value);
         }
         case '+':
         {
             _Psc_Lexer_Advance(self);
-            return Psc_Token_Construct(PSC_TOKEN_ADD, token_value);
+            return Psc_Token(PSC_TOKEN_ADD, token_value);
         }
         case '-':
         {
             _Psc_Lexer_Advance(self);
-            return Psc_Token_Construct(PSC_TOKEN_SUB, token_value);
+            return Psc_Token(PSC_TOKEN_SUB, token_value);
         }
         default:
         {

@@ -79,22 +79,13 @@ Psc_Token_Mem_T _Psc_Token_Mem(Psc_Token_Type_T token_type)
 /*******************************************************************************
  * Functions Definitions
  ******************************************************************************/
-Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, Psc_Token_Value_T value)
+Psc_Token_T Psc_Token(Psc_Token_Type_T type, Psc_Token_Value_T value)
 {
     Psc_Token_T           obj           = _Psc_Empty_Token(type);
     const Psc_Token_Mem_T token_memtype = _Psc_Token_Mem(type);
 
     switch (token_memtype)
     {
-        #if 0
-        case PSC_TOKEN_MEM_STR:
-        {
-            char *valuemem_ = (char *)malloc(STR_MAX_SIZE);
-            strncpy(valuemem_, value.v_str, STR_MAX_SIZE);
-            obj.value.v_str = valuemem_;
-            break;
-        }
-        #endif
         case PSC_TOKEN_MEM_NULL:
         {
             /* TODO: add error handling (error + abort) here */
@@ -109,19 +100,6 @@ Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, Psc_Token_Value_T value)
     }
 
     return obj;
-}
-
-void Psc_Token_Descruct(Psc_Token_T *self)
-{
-    #if 0
-    const Psc_Token_Mem_T token_memtype = Psc_Token_Get_Memtype(self);
-    if ( (token_memtype == PSC_TOKEN_MEM_STR) && (NULL != self->value.v_str) )
-    {
-        free(self->value.v_str);
-    }
-    #endif
-
-    *self = Psc_Token_Eof();
 }
 
 Psc_Token_T Psc_Token_Eof()

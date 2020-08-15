@@ -37,7 +37,6 @@ TEST(pascal_psc_interpreter, pascal_psc_interpreter_mul)
 
         std::cout << "PSC_INTERPRETER input: " << interpreter.lexer.text
                   << " res: " << val << std::endl;
-        Psc_Interpreter_Destruct(&interpreter);
 
         EXPECT_EQ(val, calc_assert.expected_res);
     }

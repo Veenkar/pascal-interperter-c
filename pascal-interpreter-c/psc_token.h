@@ -93,18 +93,12 @@ typedef struct Psc_Token_Tag
  * Functions Definitions
  ******************************************************************************/
 /**
- * @brief Psc_Token_Construct
+ * @brief Psc_Token
  * @param type
  * @param value
  * @return
  */
-Psc_Token_T Psc_Token_Construct(Psc_Token_Type_T type, Psc_Token_Value_T value);
-
-/**
- * @brief Psc_Token_Descruct
- * @param self
- */
-void Psc_Token_Descruct(Psc_Token_T *self);
+Psc_Token_T Psc_Token(Psc_Token_Type_T type, Psc_Token_Value_T value);
 
 /**
  * @brief Psc_Token_Eof
